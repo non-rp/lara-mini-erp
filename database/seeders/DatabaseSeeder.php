@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,11 +17,47 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $commonPassword = 'Pass123!';
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $roles = new RolesAndPermissionsSeeder;
+        $roles->run();
+
+        Company::firstOrCreate([
+            'name' => 'Company 1',
+            'slug' => 'company-1',
         ]);
+
+        User::firstOrCreate(
+            ['email' => 'admin@aa.aa'],
+            [
+                'name' => 'Admin',
+                'password' => Hash::make($commonPassword),
+            ]
+        )->assignRole('admin');
+
+        User::firstOrCreate(
+            ['email' => 'manager@aa.aa'],
+            [
+                'name' => 'manager',
+                'company_id' => 1,
+                'password' => Hash::make($commonPassword),
+            ]
+        )->assignRole('manager');
+
+        User::firstOrCreate(
+            ['email' => 'warehouse@aa.aa',],
+            [
+                'name' => 'warehouse',
+                'password' => Hash::make($commonPassword),
+            ]
+        )->assignRole('warehouse');
+
+        User::firstOrCreate(
+            ['email' => 'client@aa.aa',],
+            [
+                'name' => 'client',
+                'password' => Hash::make($commonPassword),
+            ]
+        )->assignRole('client');
     }
 }
